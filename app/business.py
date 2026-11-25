@@ -1,4 +1,10 @@
 """业务阶段之间约定的结果结构。"""
+
+# 补抽件数未到计划值时的规范状态（app.modules.double_sample 中提供可与
+# 多个近义写法相等的 AliasStatus，落库 / HTTP 的规范值为此字符串）。
+PENDING_INSPECTION = 'PENDING_INSPECTION'
+
+
 class DomainIssue(ValueError):
     def __init__(self, code):
         super().__init__(code)

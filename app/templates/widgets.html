@@ -8,7 +8,7 @@
 {% endmacro %}
 {% macro intake() %}
 <form class="source" id="source" aria-label="批次输入">
-  <label>输入样例 <select id="profile"><option value="dirty">带异常样例</option><option value="clean">可签发样例</option></select></label>
+  <label>输入样例 <select id="profile"><option value="dirty">带异常样例</option><option value="double">两段抽检样例</option><option value="clean">可签发样例</option></select></label>
   <label for="file" class="file">上传 CSV</label><input id="file" type="file" accept=".csv,text/csv"><span id="file-name" aria-live="polite"></span>
   <button type="submit" class="action">执行批次</button>
 </form>
@@ -35,7 +35,15 @@
 {% macro archive() %}
 <aside class="panel archive" id="review-area"><h2>批次复核</h2><ul id="history"></ul>
   <form id="review" hidden>
-    <p id="run-status"></p><label for="note">复核意见</label>
+    <p id="run-status"></p>
+    <fieldset class="correction" id="correction-area">
+      <legend>补抽更正</legend>
+      <label>补抽件数 <input id="second-samples" type="number" min="0" inputmode="numeric" placeholder="实际件数"></label>
+      <label>补抽缺陷 <input id="second-defects" type="number" min="0" inputmode="numeric" placeholder="缺陷数"></label>
+      <button type="button" id="correct">提交补抽更正</button>
+      <p class="hint">件数未到计划值时分组保持“待验”；抽满后按两次缺陷总数判定。更正产生新版本，旧结论不能签发。</p>
+    </fieldset>
+    <label for="note">复核意见</label>
     <textarea id="note" name="note" minlength="3" maxlength="200" required></textarea>
     <div class="review-actions"><button name="decision" value="HELD">暂缓</button><button class="action" name="decision" value="APPROVED">签发</button></div>
     <a id="evidence">下载复核证据</a>

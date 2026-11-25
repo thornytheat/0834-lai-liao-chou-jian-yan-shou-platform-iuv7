@@ -3,7 +3,8 @@ from flask import request
 from app.business import DomainIssue
 from app.config import MAX_FILE, ROOT
 
-SAMPLES = {'dirty': 'incoming.csv', 'clean': 'ready.csv'}
+SAMPLES = {'dirty': 'incoming.csv', 'clean': 'ready.csv', 'double': 'double.csv',
+           'supplement': 'double.csv', 'pending': 'double.csv', 'second': 'double.csv'}
 
 
 def read_input():

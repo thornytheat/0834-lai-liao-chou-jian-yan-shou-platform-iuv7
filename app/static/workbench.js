@@ -41,9 +41,16 @@ function draw() {
 
 function show(payload, committed = false) {
   batch = committed ? payload : null;
+  if (batch && !batch.client_key) {
+    batch.client_key = (crypto.randomUUID ? crypto.randomUUID() : `receipt-${Date.now()}-${Math.random().toString(16).slice(2)}`);
+  }
   report = committed ? payload.report : payload;
   detail.elements.note.value = batch?.note || '';
   selected = report.cases?.[0]?.case;
+  const pending = report.cases?.find(item => item.status === 'PENDING_INSPECTION' || item.pending);
+  const progress = pending?.progress;
+  document.querySelector('#second-samples').value = progress?.second_samples ?? '';
+  document.querySelector('#second-defects').value = '';
   draw();
 }
 
@@ -98,9 +105,21 @@ document.querySelector('#history').addEventListener('click',event=>{
 detail.addEventListener('submit',event=>{
   event.preventDefault();
   perform(async()=>{
-    const payload={status:event.submitter.value,revision:batch.revision,note:detail.elements.note.value};
-    const result=await request(`/api/runs/${batch.id}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const payload={status:event.submitter.value,revision:batch.revision,note:detail.elements.note.value,
+      idempotency_key:batch.client_key};
+    const result=await request(`/api/runs/${batch.id}`,{method:'PATCH',headers:{'Content-Type':'application/json','Idempotency-Key':batch.client_key},body:JSON.stringify(payload)});
     show(result,true); announce(result.status==='APPROVED'?'批次已签发':'批次已暂缓'); await refresh();
+  });
+});
+document.querySelector('#correct').addEventListener('click',()=>{
+  const samples=Number(document.querySelector('#second-samples').value);
+  const defects=Number(document.querySelector('#second-defects').value || 0);
+  if (!Number.isInteger(samples) || samples < 0) { announce('请填写补抽件数',true); return; }
+  perform(async()=>{
+    const payload={revision:batch.revision,case:selected,second_samples:samples,second_defects:defects};
+    const result=await request(`/api/runs/${batch.id}/correction`,{
+      method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    show(result,true); announce('补抽更正已记入，结论已按新版本复算'); await refresh();
   });
 });
 preview(stage);
