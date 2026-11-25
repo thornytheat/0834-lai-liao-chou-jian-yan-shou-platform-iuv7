@@ -1,0 +1,16 @@
+EXPECTED = {'0001': (3, 834, 'READY'),
+ '0002': (8, 0, 'READY'),
+ '0003': (0, None, 'INVALID_SAMPLING_PLAN'),
+ '0004': (3, 5000, 'CONSUMER_RISK_LIMIT')}
+EVIDENCE = {'0001': {'producer_reject_bp': 0,
+          'consumer_accept_bp': 834,
+          'acceptance_number': 0,
+          'observed_defects': 0,
+          'observed_passed': True,
+          'producer_risk_passed': True},
+ '0004': {'producer_reject_bp': 0,
+          'consumer_accept_bp': 5000,
+          'acceptance_number': 1,
+          'observed_defects': 0,
+          'observed_passed': True,
+          'producer_risk_passed': True}}
